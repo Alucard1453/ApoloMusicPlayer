@@ -1,4 +1,4 @@
-package com.alucard.apolo.Controlador;
+package com.alucard.apolo;
 
 
 import android.os.Bundle;
@@ -14,10 +14,10 @@ import com.alucard.apolo.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ArtistasFragment extends Fragment {
+public class AlbumesFragment extends Fragment {
 
 
-    public ArtistasFragment() {
+    public AlbumesFragment() {
         // Required empty public constructor
     }
 
@@ -26,8 +26,8 @@ public class ArtistasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_artistas, container, false);
-        View view = inflater.inflate(R.layout.fragment_artistas, container, false);
+        //return inflater.inflate(R.layout.fragment_albumes, container, false);
+        View view = inflater.inflate(R.layout.fragment_albumes, container, false);
 
         return view;
     }

@@ -1,4 +1,4 @@
-package com.alucard.apolo.Controlador;
+package com.alucard.apolo;
 
 import android.graphics.drawable.Icon;
 
