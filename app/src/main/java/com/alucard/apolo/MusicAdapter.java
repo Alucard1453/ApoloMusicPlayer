@@ -1,6 +1,7 @@
 package com.alucard.apolo;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -33,11 +34,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, final int position) {
         String duracion="";
         holder.file_name.setText(mFiles.get(position).getTitle());
         holder.artist_name.setText(mFiles.get(position).getArtist());
-        int min = Integer.parseInt (mFiles.get(position).getDuration()) / 1000 / 60;
+        final int min = Integer.parseInt (mFiles.get(position).getDuration()) / 1000 / 60;
         int sec = Integer.parseInt (mFiles.get(position).getDuration()) / 1000 % 60;
 
         duracion = min+":";
@@ -53,6 +54,15 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
         }else{
             Glide.with(mContext).asBitmap().load(R.drawable.no_cover).into(holder.album_art);
         }
+        //Generamos el intento para iniciar el reproductor
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, MusicPlayActivity.class);
+                intent.putExtra("position", position);
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     @Override
