@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,13 +14,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.alucard.apolo.Controlador.AlbumesFragment;
-import com.alucard.apolo.Controlador.ArtistasFragment;
-import com.alucard.apolo.Controlador.CancionesFragment;
-import com.alucard.apolo.Controlador.ListasFragment;
-import com.alucard.apolo.Controlador.ViewPagerAdapter;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
@@ -37,7 +30,7 @@ public class BibliotecaActivity extends AppCompatActivity {
     ViewPagerAdapter pagerAdapter;
     private List<Integer> fragmentsIcons = new ArrayList<>(Arrays.asList(R.drawable.canciones, R.drawable.listas, R.drawable.album, R.drawable.artist));
     public static int REQUEST_CODE = 1;
-    ArrayList<MusicFiles> musicFiles;
+    static ArrayList<MusicFiles> musicFiles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +38,7 @@ public class BibliotecaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_biblioteca);
 
         permission();
-        setupView();
-        setUpViewPagerAdapter();
+
     }
 
     private void permission() {
@@ -55,9 +47,10 @@ public class BibliotecaActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(BibliotecaActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}
             , REQUEST_CODE);
         }else{
-            Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show();
-            Log.e("Prueba","Hola");
+            //Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show();
             musicFiles = getAllAudio(this);
+            setupView();
+            setUpViewPagerAdapter();
         }
     }
 
@@ -66,8 +59,10 @@ public class BibliotecaActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE){
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Permiso concedido", Toast.LENGTH_SHORT).show();
                 musicFiles = getAllAudio(this);
+                setupView();
+                setUpViewPagerAdapter();
             }else{
                 ActivityCompat.requestPermissions(BibliotecaActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}
                         , REQUEST_CODE);
