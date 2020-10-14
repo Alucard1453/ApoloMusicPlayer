@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "com.alucard.apolo"
         minSdkVersion 26
-        targetSdkVersion 30
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -31,4 +31,5 @@ dependencies {
     //Glide obtención, decodificación y visualización de imágenes
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation 'androidx.palette:palette:1.0.0'
 }

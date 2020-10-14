@@ -10,6 +10,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -31,6 +32,8 @@ public class BibliotecaActivity extends AppCompatActivity {
     private List<Integer> fragmentsIcons = new ArrayList<>(Arrays.asList(R.drawable.canciones, R.drawable.listas, R.drawable.album, R.drawable.artist));
     public static int REQUEST_CODE = 1;
     static ArrayList<MusicFiles> musicFiles;
+
+    static boolean shuffle = false, repeat = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +129,8 @@ public class BibliotecaActivity extends AppCompatActivity {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.DATA, //Para el path (ruta)
-            MediaStore.Audio.Media.ARTIST
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media._ID
         };
         Cursor cursor = context.getContentResolver().query(uri,projection,
                 null, null, null);
@@ -137,8 +141,9 @@ public class BibliotecaActivity extends AppCompatActivity {
                 String duration = cursor.getString(2);
                 String path = cursor.getString(3);
                 String artist = cursor.getString(4);
+                String id = cursor.getString(5);
 
-                MusicFiles musicFiles = new MusicFiles(path, title, artist, album, duration);
+                MusicFiles musicFiles = new MusicFiles(path, title, artist, album, duration, id);
 
                 //Revisamos
                 Log.e("Path: "+path, "Album: "+ album);
@@ -149,5 +154,4 @@ public class BibliotecaActivity extends AppCompatActivity {
         }
         return tempAudioList;
     }
-
 }

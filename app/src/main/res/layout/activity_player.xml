@@ -165,7 +165,7 @@
                 android:layout_height="80dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:background="@drawable/play" />
+                android:background="@drawable/pause" />
 
             <Button
                 android:id="@+id/btn_next"
