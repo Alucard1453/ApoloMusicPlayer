@@ -39,7 +39,6 @@ public class BibliotecaActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
-
         permission();
 
     }
@@ -154,4 +153,6 @@ public class BibliotecaActivity extends AppCompatActivity {
         }
         return tempAudioList;
     }
+
+    public void selectFragment(int position){viewPager.setCurrentItem(position, true);}
 }

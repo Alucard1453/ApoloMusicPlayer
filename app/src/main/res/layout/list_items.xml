@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="1dp"
+    android:background="@drawable/background_normal"
+    android:id="@+id/list_item">
+
+    <ImageView
+        android:id="@+id/list_img"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/no_cover"
+        android:padding="5dp" />
+
+    <TextView
+        android:id="@+id/list_file_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nombre Lista"
+        android:maxLines="1"
+        android:paddingTop="8dp"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_toEndOf="@+id/list_img"
+        android:layout_marginStart="10dp"
+        android:textColor="#FFFFFF"/>
+
+    <TextView
+        android:id="@+id/num_songs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Número de canciones"
+        android:textStyle="italic"
+        android:paddingTop="15dp"
+        android:textSize="15sp"
+        android:layout_toEndOf="@+id/list_img"
+        android:layout_marginTop="22dp"
+        android:layout_marginStart="10dp"
+        android:textColor="#FFFFFF"/>
+
+</RelativeLayout>
