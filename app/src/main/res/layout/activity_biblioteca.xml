@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/background_normal"
+    android:background="@color/colorPrimary"
     android:gravity="center_horizontal"
     tools:context=".BibliotecaActivity">
 
@@ -16,10 +16,11 @@
         android:background="@color/colorPrimary"
         app:tabIndicatorFullWidth="true"
         app:tabTextColor="#FFFFFF"
+        app:tabSelectedTextColor="@color/colorAccent"
         app:tabMode="fixed"
         app:tabTextAppearance="@style/CustomTextAppearanceTab"
-        app:tabIndicatorHeight="70dp"
-        app:tabIndicatorColor="@color/colorPrimaryDark">
+        app:tabIndicatorHeight="5dp"
+        app:tabIndicatorColor="@color/colorAccent">
         <!--app:tabIndicator="@drawable/tab_indicator"> -->
     </com.google.android.material.tabs.TabLayout>
 

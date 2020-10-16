@@ -10,11 +10,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
@@ -40,6 +42,50 @@ public class BibliotecaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
         permission();
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+                switch (tab.getPosition()){
+                    case 0:
+                        tabLayout.getTabAt(0).setIcon(R.drawable.cancionesselect);
+                        tabLayout.getTabAt(1).setIcon(R.drawable.listas);
+                        tabLayout.getTabAt(2).setIcon(R.drawable.album);
+                        tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        break;
+                    case 1:
+                        tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
+                        tabLayout.getTabAt(1).setIcon(R.drawable.listasselect);
+                        tabLayout.getTabAt(2).setIcon(R.drawable.album);
+                        tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        break;
+                    case 2:
+                        tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
+                        tabLayout.getTabAt(1).setIcon(R.drawable.listas);
+                        tabLayout.getTabAt(2).setIcon(R.drawable.albumselect);
+                        tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        break;
+                    case 3:
+                        tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
+                        tabLayout.getTabAt(1).setIcon(R.drawable.listas);
+                        tabLayout.getTabAt(2).setIcon(R.drawable.album);
+                        tabLayout.getTabAt(3).setIcon(R.drawable.artistselect);
+                        break;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+
+        });
 
     }
 
@@ -87,36 +133,12 @@ public class BibliotecaActivity extends AppCompatActivity {
         viewPager.setAdapter(pagerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
-        /*tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                switch (tab.getPosition()){
-                    case 0:
-                        Log.d("TAG1","Posicion: "+tabLayout.getSelectedTabPosition()+" Titulo: "+ pagerAdapter.getPageTitle(tabLayout.getSelectedTabPosition()));
-                    case 1:
-                        Log.d("TAG1","Posicion: "+tabLayout.getSelectedTabPosition()+" Titulo: "+ pagerAdapter.getPageTitle(tabLayout.getSelectedTabPosition()));
-                    case 2:
-                        Log.d("TAG1","Posicion: "+tabLayout.getSelectedTabPosition()+" Titulo: "+ pagerAdapter.getPageTitle(tabLayout.getSelectedTabPosition()));
-                    case 3:
-                        Log.d("TAG1","Posicion: "+tabLayout.getSelectedTabPosition()+" Titulo: "+ pagerAdapter.getPageTitle(tabLayout.getSelectedTabPosition()));
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
-        });*/
 
         //Iconos
         for (int i = 0; i < tabLayout.getTabCount(); i++) {
             tabLayout.getTabAt(i).setIcon(fragmentsIcons.get(i));
         }
+        tabLayout.getTabAt(0).setIcon(R.drawable.cancionesselect);
     }
 
     private static ArrayList<MusicFiles> getAllAudio(Context context) {
