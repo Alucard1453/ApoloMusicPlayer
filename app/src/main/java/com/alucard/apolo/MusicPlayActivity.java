@@ -120,7 +120,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
                 }else{
                     repeat = true;
                     btn_loop.setBackgroundResource(R.drawable.loop_on);
-                    Toast.makeText(MusicPlayActivity.this, "Aleatorio activado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MusicPlayActivity.this, "Repetir activado", Toast.LENGTH_SHORT).show();
                 }
                 SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor edit = sp.edit();

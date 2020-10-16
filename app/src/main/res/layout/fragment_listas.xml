@@ -14,7 +14,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="72dp"
-            android:background="@drawable/background_normal"
+            android:background="@color/colorSecondary"
             android:orientation="horizontal">
 
             <Button
