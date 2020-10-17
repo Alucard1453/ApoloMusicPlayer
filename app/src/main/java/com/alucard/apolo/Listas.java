@@ -1,22 +1,20 @@
 package com.alucard.apolo;
 
-
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,33 +27,26 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class ListasFragment extends Fragment {
+public class Listas extends AppCompatActivity {
+
     private RecyclerView recyclerView;
     private ListAdapter listAdapter;
     private String filename = "lista.txt";
     Dialog listas;
-    Button crear;
     EditText nombre;
-    FileInputStream in = null;
-
-
-    public ListasFragment() {
-        // Required empty public constructor
-    }
-
+    Button nueva;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        //return inflater.inflate(R.layout.fragment_listas, container, false);
-        View view = inflater.inflate(R.layout.fragment_listas, container, false);
-        listas = new Dialog(getContext());
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_dialog_listas);
+
+        getSupportActionBar().hide();
+        listas = new Dialog(this);
         listas.setContentView(R.layout.dialog_nombre_lista);
-        //Recuperar de Json
+
+        nueva = (Button)findViewById(R.id.nueva_lista_app);
+
         List<ListasDeReproduccion> data = new ArrayList<>();
 
         try {
@@ -72,16 +63,15 @@ public class ListasFragment extends Fragment {
                 data.add(listasDeReproduccion);
             }
 
-            recyclerView = (RecyclerView) view.findViewById(R.id.recyclerlistas);
-            listAdapter = new ListAdapter(getContext(), data);
+            recyclerView = (RecyclerView)findViewById(R.id.recyclernew);
+            listAdapter = new ListAdapter(this, data);
             recyclerView.setAdapter(listAdapter);
-            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+            recyclerView.setLayoutManager(new LinearLayoutManager(this));
         }catch (JSONException e) {
             System.out.println(e);
         }
 
-        crear = (Button)view.findViewById(R.id.crear);
-        crear.setOnClickListener(new View.OnClickListener() {
+        nueva.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listas.show();
@@ -101,22 +91,49 @@ public class ListasFragment extends Fragment {
                     public void onClick(View v) {
                         RecuperarValor(nombre.getText().toString());
                         listas.hide();
-                        FragmentManager fm = getFragmentManager();
-                        FragmentTransaction ft = fm.beginTransaction();
-                        ListasFragment ln = new ListasFragment();
-                        ft.replace(R.id.framelistas, ln);
-                        ft.commit();
+                        finish();
+                        Intent intent = new Intent(Listas.this, BibliotecaActivity.class);
+                        overridePendingTransition( 0, 0);
+                        Listas.this.startActivity(intent);
+                        overridePendingTransition( 0, 0);
                     }
                 });
             }
         });
+    }
 
-        return view;
+    public String readJSON(){
+        FileInputStream in = null;
+        StringBuilder sb = new StringBuilder();
+        String resultado = "";
+
+        try{
+            in = this.openFileInput("lista.txt");
+            int read = 0;
+            while ((read = in.read()) != -1){
+                resultado = (sb.append((char) read)).toString();
+            }
+            System.out.println(sb.toString());
+        }catch (FileNotFoundException e){
+            e.printStackTrace();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        finally {
+            if(in != null){
+                try{
+                    in.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+        return  resultado;
     }
 
     public void RecuperarValor(String valor)
     {
-        Toast.makeText(getActivity(), valor, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, valor, Toast.LENGTH_SHORT).show();
         String resultado = ReadFile();
         try {
             JSONObject PRUEBA = new JSONObject(resultado);
@@ -132,7 +149,7 @@ public class ListasFragment extends Fragment {
             JSONArray old = PRUEBA.getJSONArray("lista");
             old.put(object);
 
-            WriteFile(getActivity(), filename, PRUEBA.toString());
+            WriteFile(this, filename, PRUEBA.toString());
         }
         catch (JSONException e){
             e.printStackTrace();
@@ -146,7 +163,7 @@ public class ListasFragment extends Fragment {
         String resultado = "";
 
         try{
-            in = getContext().openFileInput("lista.txt");
+            in = this.openFileInput("lista.txt");
             int read = 0;
             while ((read = in.read()) != -1){
                 resultado = (sb.append((char) read)).toString();
@@ -190,35 +207,5 @@ public class ListasFragment extends Fragment {
             }
         }
     }
-
-    public String readJSON(){
-        FileInputStream in = null;
-        StringBuilder sb = new StringBuilder();
-        String resultado = "";
-
-        try{
-            in = getContext().openFileInput("lista.txt");
-            int read = 0;
-            while ((read = in.read()) != -1){
-                resultado = (sb.append((char) read)).toString();
-            }
-            System.out.println(sb.toString());
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(in != null){
-                try{
-                    in.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-        return  resultado;
-    }
-
 
 }
