@@ -21,6 +21,14 @@ import android.widget.TextView;
 import com.google.android.material.tabs.TabItem;
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -38,11 +46,15 @@ public class BibliotecaActivity extends AppCompatActivity {
 
     static boolean shuffle = false, repeat = false;
 
+    FileInputStream in = null;
+    String filename = "lista.txt";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
         permission();
+        crearArchivo();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -179,5 +191,57 @@ public class BibliotecaActivity extends AppCompatActivity {
         return tempAudioList;
     }
 
-    public void selectFragment(int position){viewPager.setCurrentItem(position, true);}
+    public ViewPager getViewPager(){
+        viewPager = (ViewPager)findViewById(R.id.viewPager);
+        return viewPager;
+    }
+
+    public void crearArchivo(){
+        try{
+            in = this.openFileInput(filename);
+        }catch (FileNotFoundException e)
+        {
+            crearJSON();
+        }
+    }
+
+    public void crearJSON(){
+
+        JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
+        JSONObject principal = new JSONObject();
+        JSONArray canciones = new JSONArray();
+        try{
+            object.put("nombre", "Favoritos");
+            object.put("numCanciones", "0");
+            object.put("canciones", canciones);
+            array.put(object);
+            principal.put("lista",array);
+        }catch (JSONException e){}
+
+
+        WriteFile(this, filename,principal.toString());
+    }
+
+    public void WriteFile(Context context, String filename, String str)
+    {
+        FileOutputStream out = null;
+        try {
+            out = context.openFileOutput(filename, Context.MODE_APPEND);
+            out.write(str.getBytes(), 0, str.length());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        finally {
+            if(out != null){
+                try {
+                    out.close();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
