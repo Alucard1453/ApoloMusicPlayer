@@ -4,6 +4,6 @@
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorSecondary">#262626</color>
     <color name="colorAccent">#E5A122</color>
-    <color name="colorLigth">#000000</color>
+    <color name="colorWhite">#FFFFFF</color>
     <color name="dialog">#000000</color>
 </resources>

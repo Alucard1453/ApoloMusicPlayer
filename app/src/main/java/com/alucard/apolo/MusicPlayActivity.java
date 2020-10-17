@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.alucard.apolo.AlbumDetailsAdapter.albumFiles;
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.repeat;
 import static com.alucard.apolo.BibliotecaActivity.shuffle;
@@ -383,7 +384,13 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
 
     private void getIntentMethod() {
         position = getIntent().getIntExtra("position",-1);
-        listSongs = musicFiles;
+        String sender = getIntent().getStringExtra("sender");
+        if (sender != null && sender.equals("albumDetails")){
+            listSongs = albumFiles;
+        }else{
+            listSongs = musicFiles;
+        }
+
         if (listSongs != null){
             btn_play_pause.setBackgroundResource(R.drawable.pause);
             uri = Uri.parse(listSongs.get(position).getPath());

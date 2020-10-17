@@ -34,6 +34,7 @@ public class BibliotecaActivity extends AppCompatActivity {
     private List<Integer> fragmentsIcons = new ArrayList<>(Arrays.asList(R.drawable.canciones, R.drawable.listas, R.drawable.album, R.drawable.artist));
     public static int REQUEST_CODE = 1;
     static ArrayList<MusicFiles> musicFiles;
+    static int tipoVista = 0;
 
     static boolean shuffle = false, repeat = false;
 
@@ -65,12 +66,14 @@ public class BibliotecaActivity extends AppCompatActivity {
                         tabLayout.getTabAt(1).setIcon(R.drawable.listas);
                         tabLayout.getTabAt(2).setIcon(R.drawable.albumselect);
                         tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        tipoVista = 2;
                         break;
                     case 3:
                         tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
                         tabLayout.getTabAt(1).setIcon(R.drawable.listas);
                         tabLayout.getTabAt(2).setIcon(R.drawable.album);
                         tabLayout.getTabAt(3).setIcon(R.drawable.artistselect);
+                        tipoVista = 3;
                         break;
                 }
             }
