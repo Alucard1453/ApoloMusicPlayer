@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,6 +21,7 @@ public class AlbumDetails extends AppCompatActivity {
     RecyclerView recyclerView;
     ImageView albumPhoto;
     String albumName;
+    int tipo;
     ArrayList<MusicFiles> albumSongs = new ArrayList<>();
     AlbumDetailsAdapter albumDetailsAdapter;
     TextView nameAlbum;
@@ -32,8 +34,10 @@ public class AlbumDetails extends AppCompatActivity {
         albumPhoto = findViewById(R.id.albumPhoto);
         nameAlbum = findViewById(R.id.nombreAlbum);
         albumName = getIntent().getStringExtra("albumName");
+        tipo = getIntent().getIntExtra("tipo",0);
+        System.out.println("TIPOOO" + tipo);
         nameAlbum.setText(albumName);
-        if (tipoVista == 2) {
+        if (tipoVista == 2 || tipo == 2) {
             int j = 0;
             for (int i = 0; i < musicFiles.size(); i++) {
                 if (albumName.equals(musicFiles.get(i).getAlbum())) {
@@ -41,7 +45,7 @@ public class AlbumDetails extends AppCompatActivity {
                     j++;
                 }
             }
-        }else if (tipoVista == 3){
+        }else if (tipoVista == 3 || tipo == 3){
             int j = 0;
             for (int i = 0; i < musicFiles.size(); i++) {
                 if (albumName.equals(musicFiles.get(i).getArtist())) {

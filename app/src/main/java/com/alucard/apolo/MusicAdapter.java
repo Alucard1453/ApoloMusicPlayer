@@ -4,40 +4,26 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder> {
     private Context mContext;
     private ArrayList<MusicFiles> mFiles;
-    private String filename = "lista.txt";
     Dialog myDialog;
-    Dialog nueva;
 
 
 
@@ -52,10 +38,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
         View view = LayoutInflater.from(mContext).inflate(R.layout.music_items,parent,false);
         myDialog = new Dialog(mContext);
         myDialog.setContentView(R.layout.dialog_cancionesmenu);
-
-
-        nueva= new Dialog(mContext);
-        nueva.setContentView(R.layout.dialog_nombre_lista);
         return new MyViewHolder(view);
     }
 
@@ -64,6 +46,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
         String duracion="";
         holder.file_name.setText(mFiles.get(position).getTitle());
         holder.artist_name.setText(mFiles.get(position).getArtist());
+        holder.album_name.setText(mFiles.get(position).getAlbum());
         final int min = Integer.parseInt (mFiles.get(position).getDuration()) / 1000 / 60;
         int sec = Integer.parseInt (mFiles.get(position).getDuration()) / 1000 % 60;
 
@@ -110,6 +93,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
         TextView file_name;
         TextView artist_name;
         ImageView album_art;
+        TextView album_name;
         TextView duration;
         ImageButton menu;
 
@@ -117,6 +101,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
             super(itemView);
             file_name = itemView.findViewById(R.id.music_file_name);
             artist_name = itemView.findViewById(R.id.music_file_artist);
+            album_name = itemView.findViewById(R.id.music_file_album);
             duration = itemView.findViewById(R.id.music_file_duration);
             album_art = itemView.findViewById(R.id.music_img);
             menu = itemView.findViewById(R.id.menu);
@@ -131,10 +116,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
             ImageView music_img_op = (ImageView) myDialog.findViewById(R.id.music_img_op);
             TextView music_file_name_op = (TextView) myDialog.findViewById(R.id.music_file_name_op);
             TextView music_file_artist_op = (TextView) myDialog.findViewById(R.id.music_file_artist_op);
+            TextView music_file_album_op = (TextView)myDialog.findViewById(R.id.music_file_album_op);
 
             music_file_name_op.setText(file_name.getText().toString());
             music_file_artist_op.setText(artist_name.getText().toString());
             music_img_op.setImageDrawable(album_art.getDrawable());
+            music_file_album_op.setText(album_name.getText().toString());
 
             myDialog.show();
 
@@ -143,7 +130,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
-                    ((BibliotecaActivity)mContext).getViewPager().setCurrentItem(2);
+                    String name = album_name.getText().toString();
+                    Intent intento = new Intent(mContext, AlbumDetails.class);
+                    intento.putExtra("albumName", name);
+                    intento.putExtra("tipo", 2);
+                    mContext.startActivity(intento);
+                    //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(2);
+
                 }
             });
 
@@ -152,7 +145,12 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
-                    ((BibliotecaActivity)mContext).getViewPager().setCurrentItem(3);
+                    //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(3);
+                    String artista = artist_name.getText().toString();
+                    Intent intento = new Intent(mContext, AlbumDetails.class);
+                    intento.putExtra("albumName", artista);
+                    intento.putExtra("tipo", 3);
+                    mContext.startActivity(intento);
                 }
             });
 
@@ -163,31 +161,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
                     myDialog.hide();
                     Intent intent = new Intent(mContext, Listas.class);
                     mContext.startActivity(intent);
-                    /*listas.show();
-
-                    nombre = (EditText)listas.findViewById(R.id.name);
-
-                    Button cancelar = (Button)listas.findViewById(R.id.cancelar);
-                    cancelar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            listas.hide();
-                        }
-                    });
-
-                    Button aceptar = (Button)listas.findViewById(R.id.aceptar);
-                    aceptar.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            RecuperarValor(nombre.getText().toString());
-                            listas.hide();
-                            Fragment fragment = new ListasFragment();
-                            ((BibliotecaActivity)mContext).getSupportFragmentManager().beginTransaction().
-                            replace(R.id.framelistas, fragment, "Nuevo").
-                            addToBackStack(null).commit();
-
-                        }
-                    });*/
                 }
             });
         }

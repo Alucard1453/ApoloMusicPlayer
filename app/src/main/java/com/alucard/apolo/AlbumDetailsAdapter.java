@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
         String duracion="";
         holder.file_name.setText(albumFiles.get(position).getTitle());
         holder.artist_name.setText(albumFiles.get(position).getArtist());
+        holder.album_name.setText(albumFiles.get(position).getAlbum());
         final int min = Integer.parseInt (albumFiles.get(position).getDuration()) / 1000 / 60;
         int sec = Integer.parseInt (albumFiles.get(position).getDuration()) / 1000 % 60;
 
@@ -83,12 +85,14 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
         TextView file_name;
         TextView artist_name;
         ImageView album_art;
+        TextView album_name;
         TextView duration;
         ImageButton menu;
         public MyHolder(@NonNull View itemView) {
             super(itemView);
             file_name = itemView.findViewById(R.id.music_file_name);
             artist_name = itemView.findViewById(R.id.music_file_artist);
+            album_name = itemView.findViewById(R.id.music_file_album);
             duration = itemView.findViewById(R.id.music_file_duration);
             album_art = itemView.findViewById(R.id.music_img);
             menu = itemView.findViewById(R.id.menu);
@@ -103,19 +107,52 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
             ImageView music_img_op = (ImageView) myDialog.findViewById(R.id.music_img_op);
             TextView music_file_name_op = (TextView) myDialog.findViewById(R.id.music_file_name_op);
             TextView music_file_artist_op = (TextView) myDialog.findViewById(R.id.music_file_artist_op);
+            TextView music_file_album_op = (TextView)myDialog.findViewById(R.id.music_file_album_op);
 
             music_file_name_op.setText(file_name.getText().toString());
             music_file_artist_op.setText(artist_name.getText().toString());
             music_img_op.setImageDrawable(album_art.getDrawable());
+            music_file_album_op.setText(album_name.getText().toString());
 
             myDialog.show();
 
-            Button prueba = (Button) myDialog.findViewById(R.id.view_album);
-            prueba.setOnClickListener(new View.OnClickListener() {
+            Button album = (Button) myDialog.findViewById(R.id.botonalbum);
+            album.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    System.out.println("prueba");
                     myDialog.hide();
+                    String name = album_name.getText().toString();
+                    Intent intento = new Intent(mContext, AlbumDetails.class);
+                    intento.putExtra("albumName", name);
+                    intento.putExtra("tipo", 2);
+                    mContext.startActivity(intento);
+                    //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(2);
+
+                }
+            });
+
+            Button artista = (Button)myDialog.findViewById(R.id.botonartista);
+            artista.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    myDialog.hide();
+                    //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(3);
+                    String artista = artist_name.getText().toString();
+                    Intent intento = new Intent(mContext, AlbumDetails.class);
+                    intento.putExtra("albumName", artista);
+                    intento.putExtra("tipo", 3);
+                    mContext.startActivity(intento);
+                    Log.i("Ver", artista);
+                }
+            });
+
+            Button agregarlista = (Button)myDialog.findViewById(R.id.add_playlist);
+            agregarlista.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    myDialog.hide();
+                    Intent intent = new Intent(mContext, Listas.class);
+                    mContext.startActivity(intent);
                 }
             });
         }

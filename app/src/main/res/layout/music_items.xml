@@ -63,4 +63,12 @@
         android:layout_marginTop="14dp"
         android:layout_marginEnd="22dp"
         android:background="@drawable/menu" />
+
+    <TextView
+        android:id="@+id/music_file_album"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/colorSecondary"
+        android:textSize="1sp" />
 </RelativeLayout>
