@@ -66,12 +66,14 @@ public class BibliotecaActivity extends AppCompatActivity {
                         tabLayout.getTabAt(1).setIcon(R.drawable.listas);
                         tabLayout.getTabAt(2).setIcon(R.drawable.album);
                         tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        tipoVista = 0;
                         break;
                     case 1:
                         tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
                         tabLayout.getTabAt(1).setIcon(R.drawable.listasselect);
                         tabLayout.getTabAt(2).setIcon(R.drawable.album);
                         tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        tipoVista = 1;
                         break;
                     case 2:
                         tabLayout.getTabAt(0).setIcon(R.drawable.canciones);

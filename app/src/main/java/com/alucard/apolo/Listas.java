@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,19 +36,26 @@ public class Listas extends AppCompatActivity {
     Dialog listas;
     EditText nombre;
     Button nueva;
+    String title, artist, time, name;
+    byte[] albumfoto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_dialog_listas);
-
+        title = getIntent().getStringExtra("titulo");
+        artist = getIntent().getStringExtra("artista");
+        time = getIntent().getStringExtra("tiempo");
+        name = getIntent().getStringExtra("album");
+        albumfoto = getIntent().getByteArrayExtra("caratula");
         getSupportActionBar().hide();
         listas = new Dialog(this);
         listas.setContentView(R.layout.dialog_nombre_lista);
-
         nueva = (Button)findViewById(R.id.nueva_lista_app);
 
         List<ListasDeReproduccion> data = new ArrayList<>();
+
+
 
         try {
             String jsonString = readJSON();
@@ -64,7 +72,7 @@ public class Listas extends AppCompatActivity {
             }
 
             recyclerView = (RecyclerView)findViewById(R.id.recyclernew);
-            listAdapter = new ListAdapter(this, data);
+            listAdapter = new ListAdapter(this, data, title, artist, time, name, albumfoto);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
         }catch (JSONException e) {
@@ -89,7 +97,7 @@ public class Listas extends AppCompatActivity {
                 aceptar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecuperarValor(nombre.getText().toString());
+                        RecuperarValor(nombre.getText().toString(), title, artist, time, name, albumfoto);
                         listas.hide();
                         finish();
                         Intent intent = new Intent(Listas.this, BibliotecaActivity.class);
@@ -101,6 +109,8 @@ public class Listas extends AppCompatActivity {
             }
         });
     }
+
+
 
     public String readJSON(){
         FileInputStream in = null;
@@ -131,18 +141,25 @@ public class Listas extends AppCompatActivity {
         return  resultado;
     }
 
-    public void RecuperarValor(String valor)
+    public void RecuperarValor(String valor, String title, String artist, String time, String name, byte[] albumfoto)
     {
         Toast.makeText(this, valor, Toast.LENGTH_SHORT).show();
-        String resultado = ReadFile();
+        String resultado = readJSON();
         try {
             JSONObject PRUEBA = new JSONObject(resultado);
             JSONArray canciones = new JSONArray();
             JSONObject object = new JSONObject();
+            JSONObject element = new JSONObject();
             try{
                 object.put("nombre", valor);
-                object.put("numCanciones", 0);
+                object.put("numCanciones", 1);
                 object.put("canciones", canciones);
+                element.put("nombreCancion",title);
+                element.put("artista", artist);
+                element.put("duracion", time);
+                element.put("album", name);
+                element.put("foto", albumfoto);
+                canciones.put(element);
 
             }catch (JSONException e){}
 
@@ -156,35 +173,6 @@ public class Listas extends AppCompatActivity {
         }
     }
 
-    public String ReadFile()
-    {
-        FileInputStream in = null;
-        StringBuilder sb = new StringBuilder();
-        String resultado = "";
-
-        try{
-            in = this.openFileInput("lista.txt");
-            int read = 0;
-            while ((read = in.read()) != -1){
-                resultado = (sb.append((char) read)).toString();
-            }
-            System.out.println(sb.toString());
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(in != null){
-                try{
-                    in.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-        return  resultado;
-    }
 
     public void WriteFile(Context context, String filename, String str)
     {

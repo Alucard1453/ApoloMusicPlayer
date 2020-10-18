@@ -35,7 +35,6 @@ public class AlbumDetails extends AppCompatActivity {
         nameAlbum = findViewById(R.id.nombreAlbum);
         albumName = getIntent().getStringExtra("albumName");
         tipo = getIntent().getIntExtra("tipo",0);
-        System.out.println("TIPOOO" + tipo);
         nameAlbum.setText(albumName);
         if (tipoVista == 2 || tipo == 2) {
             int j = 0;

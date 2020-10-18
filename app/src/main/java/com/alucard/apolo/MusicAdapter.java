@@ -24,6 +24,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
     private Context mContext;
     private ArrayList<MusicFiles> mFiles;
     Dialog myDialog;
+    String name;
+    String artist;
+    String title;
+    String time;
+    byte[] image;
 
 
 
@@ -57,7 +62,7 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
         duracion+=sec;
 
         holder.duration.setText(duracion);
-        byte[] image = getAlbumArt(mFiles.get(position).getPath());
+        image = getAlbumArt(mFiles.get(position).getPath());
         if(image != null){
             Glide.with(mContext).asBitmap().load(image).into(holder.album_art);
         }else{
@@ -123,6 +128,13 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
             music_img_op.setImageDrawable(album_art.getDrawable());
             music_file_album_op.setText(album_name.getText().toString());
 
+            name = album_name.getText().toString();
+            artist = artist_name.getText().toString();
+            title = file_name.getText().toString();
+            time = duration.getText().toString();
+            //albumfoto = album_art.getDrawable().toString();
+
+
             myDialog.show();
 
             Button album = (Button) myDialog.findViewById(R.id.botonalbum);
@@ -130,7 +142,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
-                    String name = album_name.getText().toString();
                     Intent intento = new Intent(mContext, AlbumDetails.class);
                     intento.putExtra("albumName", name);
                     intento.putExtra("tipo", 2);
@@ -146,9 +157,8 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
                 public void onClick(View v) {
                     myDialog.hide();
                     //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(3);
-                    String artista = artist_name.getText().toString();
                     Intent intento = new Intent(mContext, AlbumDetails.class);
-                    intento.putExtra("albumName", artista);
+                    intento.putExtra("albumName", artist);
                     intento.putExtra("tipo", 3);
                     mContext.startActivity(intento);
                 }
@@ -160,6 +170,11 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
                 public void onClick(View v) {
                     myDialog.hide();
                     Intent intent = new Intent(mContext, Listas.class);
+                    intent.putExtra("titulo", title);
+                    intent.putExtra("artista", artist);
+                    intent.putExtra("tiempo", time);
+                    intent.putExtra("album", name);
+                    intent.putExtra("caratula", image);
                     mContext.startActivity(intent);
                 }
             });
