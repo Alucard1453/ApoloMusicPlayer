@@ -2,9 +2,12 @@ package com.alucard.apolo;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.palette.graphics.Palette;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -28,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.alucard.apolo.AlbumDetailsAdapter.albumFiles;
+import static com.alucard.apolo.ListaDetailsAdapter.listFiles;
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.repeat;
 import static com.alucard.apolo.BibliotecaActivity.shuffle;
@@ -44,6 +48,10 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     static MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
     private Thread playThread, prevThread, nextThread;
+    String name, artist, title, time, prueba;
+    private String filename = "lista.txt";
+    ArchivoJson archivoJson;
+    static int Vista = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,12 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
 
         titleSong.setText(listSongs.get(position).getTitle());
         nameArtist.setText(listSongs.get(position).getArtist());
+
+        name = listSongs.get(position).getAlbum();
+        artist = listSongs.get(position).getArtist();
+        title = listSongs.get(position).getTitle();
+        time = listSongs.get(position).getDuration();
+        prueba = listSongs.get(position).getPath();
 
         mediaPlayer.setOnCompletionListener(this);
 
@@ -129,6 +143,27 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
                 edit.apply();
             }
         });
+
+        btn_add_playlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MusicPlayActivity.this, Listas.class);
+                intent.putExtra("titulo", title);
+                intent.putExtra("artista", artist);
+                intent.putExtra("tiempo", time);
+                intent.putExtra("album", name);
+                intent.putExtra("caratula", prueba);
+                MusicPlayActivity.this.startActivity(intent);
+            }
+        });
+
+        btn_favorite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                archivoJson = new ArchivoJson(MusicPlayActivity.this, filename);
+                archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+            }
+        });
     }
 
     private void getPreferences() {
@@ -154,6 +189,11 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         prevThreadBtn();
         super.onResume();
     }
+
+    protected void onPause() {
+        super.onPause();
+    }
+
 
     private void prevThreadBtn() {
         prevThread = new Thread(){
@@ -387,7 +427,10 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         String sender = getIntent().getStringExtra("sender");
         if (sender != null && sender.equals("albumDetails")){
             listSongs = albumFiles;
-        }else{
+        }else if (sender != null && sender.equals("listDetails")){
+            listSongs = listFiles;
+        }
+        else{
             listSongs = musicFiles;
         }
 

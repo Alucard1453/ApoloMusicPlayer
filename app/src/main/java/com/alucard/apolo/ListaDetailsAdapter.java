@@ -3,7 +3,7 @@ package com.alucard.apolo;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.media.MediaMetadataRetriever;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,31 +11,28 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.security.PublicKey;
-import java.util.Collections;
-import java.util.List;
+import com.bumptech.glide.Glide;
+import java.util.ArrayList;
 
 public class ListaDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private LayoutInflater inflater;
     Dialog myDialog;
-    List<MusicFiles> data = Collections.emptyList();
+    static ArrayList<MusicFiles> listFiles;
     MusicFiles current;
     int currentPos = 0;
+    String name, artist, title, time, prueba;
     private String filename = "lista.txt";
+    ArchivoJson archivoJson;
 
-    public ListaDetailsAdapter(Context context, List<MusicFiles> data) {
+    public ListaDetailsAdapter(Context context, ArrayList<MusicFiles> listFiles) {
         this.context = context;
         inflater = LayoutInflater.from(context);
-        this.data = data;
+        this.listFiles = listFiles;
     }
 
     @Override
@@ -50,27 +47,49 @@ public class ListaDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
         MyHolder myHolder = (MyHolder) holder;
-        final MusicFiles current = data.get(position);
+        current = listFiles.get(position);
         myHolder.file_name.setText(current.getTitle());
         myHolder.artist_name.setText(current.getArtist());
         myHolder.album_name.setText(current.getAlbum());
         myHolder.duration.setText(current.getDuration());
+        myHolder.album_foto.setText(current.getPath());
+        byte[] image = getAlbumArt(current.getPath());
+        if(image != null){
+            Glide.with(context).asBitmap().load(image).into(myHolder.album_art);
+        }else{
+            Glide.with(context).asBitmap().load(R.drawable.no_cover).into(myHolder.album_art);
+        }
+        //Generar intento pata el reproductor
+        myHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MusicPlayActivity.class);
+                intent.putExtra("position", position);
+                intent.putExtra("sender", "listDetails");
+                context.startActivity(intent);
+            }
+        });
 
         myHolder.setOnClickListeners();
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return listFiles.size();
+    }
+
+    private byte[] getAlbumArt(String uri){
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(uri);
+        byte[] art = retriever.getEmbeddedPicture();
+        retriever.release();
+        return art;
     }
 
 
     class MyHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView file_name;
-        TextView artist_name;
+        TextView file_name, artist_name, album_name, duration, album_foto;
         ImageView album_art;
-        TextView album_name;
-        TextView duration;
         ImageButton menu;
 
         public MyHolder(@NonNull View itemView) {
@@ -80,6 +99,7 @@ public class ListaDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             album_name = itemView.findViewById(R.id.music_file_album);
             duration = itemView.findViewById(R.id.music_file_duration);
             album_art = itemView.findViewById(R.id.music_img);
+            album_foto = itemView.findViewById(R.id.music_file_foto);
             menu = itemView.findViewById(R.id.menu);
         }
 
@@ -92,104 +112,79 @@ public class ListaDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             TextView music_file_name_op = (TextView) myDialog.findViewById(R.id.music_file_name_op);
             TextView music_file_artist_op = (TextView) myDialog.findViewById(R.id.music_file_artist_op);
             TextView music_file_album_op = (TextView) myDialog.findViewById(R.id.music_file_album_op);
+            TextView music_file_foto_op = (TextView)myDialog.findViewById(R.id.music_file_foto_op);
 
             music_file_name_op.setText(file_name.getText().toString());
             music_file_artist_op.setText(artist_name.getText().toString());
             music_img_op.setImageDrawable(album_art.getDrawable());
             music_file_album_op.setText(album_name.getText().toString());
+            music_file_foto_op.setText(album_foto.getText().toString());
+
+            name = album_name.getText().toString();
+            artist = artist_name.getText().toString();
+            title = file_name.getText().toString();
+            time = duration.getText().toString();
+            prueba = album_foto.getText().toString();
 
             myDialog.show();
 
             Button album = (Button) myDialog.findViewById(R.id.botonalbum);
-            /*album.setOnClickListener(new View.OnClickListener() {
+            album.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
                     String name = album_name.getText().toString();
-                    Intent intento = new Intent(mContext, AlbumDetails.class);
+                    Intent intento = new Intent(context, AlbumDetails.class);
                     intento.putExtra("albumName", name);
                     intento.putExtra("tipo", 2);
-                    mContext.startActivity(intento);
+                    context.startActivity(intento);
                     //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(2);
 
                 }
-            });*/
+            });
 
             Button artista = (Button) myDialog.findViewById(R.id.botonartista);
-            /*artista.setOnClickListener(new View.OnClickListener() {
+            artista.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
-                    //((BibliotecaActivity)mContext).getViewPager().setCurrentItem(3);
                     String artista = artist_name.getText().toString();
-                    Intent intento = new Intent(mContext, AlbumDetails.class);
+                    Intent intento = new Intent(context, AlbumDetails.class);
                     intento.putExtra("albumName", artista);
                     intento.putExtra("tipo", 3);
-                    mContext.startActivity(intento);
-                    Log.i("Ver", artista);
+                    context.startActivity(intento);
                 }
-            });*/
+            });
 
             Button agregarlista = (Button) myDialog.findViewById(R.id.add_playlist);
-            /*agregarlista.setOnClickListener(new View.OnClickListener() {
+            agregarlista.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
-                    Intent intent = new Intent(mContext, Listas.class);
-                    mContext.startActivity(intent);
+                    Intent intent = new Intent(context, Listas.class);
+                    intent.putExtra("titulo", title);
+                    intent.putExtra("artista", artist);
+                    intent.putExtra("tiempo", time);
+                    intent.putExtra("album", name);
+                    intent.putExtra("caratula", prueba);
+                    context.startActivity(intent);
                 }
-            });*/
-        }
-    }
+            });
 
-    public void WriteFile(Context context, String filename, String str)
-    {
-        FileOutputStream out = null;
-        try {
-            out = context.openFileOutput(filename, Context.MODE_PRIVATE);
-            out.write(str.getBytes(), 0, str.length());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(out != null){
-                try {
-                    out.close();
-                }catch (IOException e){
-                    e.printStackTrace();
+            Button favorito = (Button)myDialog.findViewById(R.id.fav);
+            favorito.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    myDialog.hide();
+                    archivoJson = new ArchivoJson(context, filename);
+                    archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+                    FragmentManager fm = ((BibliotecaActivity)context).getSupportFragmentManager();
+                    FragmentTransaction ft = fm.beginTransaction();
+                    CancionesFragment cf = new CancionesFragment();
+                    ft.replace(R.id.frameCanciones, cf);
+                    ft.commit();
                 }
-            }
+            });
         }
-    }
-
-    public String readJSON(){
-        FileInputStream in = null;
-        StringBuilder sb = new StringBuilder();
-        String resultado = "";
-
-        try{
-            in = context.openFileInput("lista.txt");
-            int read = 0;
-            while ((read = in.read()) != -1){
-                resultado = (sb.append((char) read)).toString();
-            }
-            System.out.println(sb.toString());
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(in != null){
-                try{
-                    in.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-        return  resultado;
     }
 }

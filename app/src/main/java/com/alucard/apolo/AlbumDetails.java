@@ -3,17 +3,12 @@ package com.alucard.apolo;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.media.MediaMetadataRetriever;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
-
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.tipoVista;
 
@@ -78,4 +73,6 @@ public class AlbumDetails extends AppCompatActivity {
         retriever.release();
         return art;
     }
+
+
 }

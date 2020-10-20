@@ -1,30 +1,17 @@
 package com.alucard.apolo;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +23,9 @@ public class Listas extends AppCompatActivity {
     Dialog listas;
     EditText nombre;
     Button nueva;
-    String title, artist, time, name;
-    byte[] albumfoto;
+    String title, artist, time, name, prueba;
+    ArchivoJson archivoJson;
+    private String TAG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -47,7 +35,7 @@ public class Listas extends AppCompatActivity {
         artist = getIntent().getStringExtra("artista");
         time = getIntent().getStringExtra("tiempo");
         name = getIntent().getStringExtra("album");
-        albumfoto = getIntent().getByteArrayExtra("caratula");
+        prueba = getIntent().getStringExtra("caratula");
         getSupportActionBar().hide();
         listas = new Dialog(this);
         listas.setContentView(R.layout.dialog_nombre_lista);
@@ -55,10 +43,10 @@ public class Listas extends AppCompatActivity {
 
         List<ListasDeReproduccion> data = new ArrayList<>();
 
-
+        archivoJson = new ArchivoJson(this, filename);
 
         try {
-            String jsonString = readJSON();
+            String jsonString = archivoJson.readJSON();
 
             JSONObject jsonObject = new JSONObject(jsonString);
             JSONArray arreglo = jsonObject.getJSONArray("lista");
@@ -72,11 +60,11 @@ public class Listas extends AppCompatActivity {
             }
 
             recyclerView = (RecyclerView)findViewById(R.id.recyclernew);
-            listAdapter = new ListAdapter(this, data, title, artist, time, name, albumfoto);
+            listAdapter = new ListAdapter(this, data, title, artist, time, name, prueba);
             recyclerView.setAdapter(listAdapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
         }catch (JSONException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
 
         nueva.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +85,7 @@ public class Listas extends AppCompatActivity {
                 aceptar.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecuperarValor(nombre.getText().toString(), title, artist, time, name, albumfoto);
+                        archivoJson.crearListaCancion(nombre.getText().toString(), title, artist, time, name, prueba);
                         listas.hide();
                         finish();
                         Intent intent = new Intent(Listas.this, BibliotecaActivity.class);
@@ -109,91 +97,4 @@ public class Listas extends AppCompatActivity {
             }
         });
     }
-
-
-
-    public String readJSON(){
-        FileInputStream in = null;
-        StringBuilder sb = new StringBuilder();
-        String resultado = "";
-
-        try{
-            in = this.openFileInput("lista.txt");
-            int read = 0;
-            while ((read = in.read()) != -1){
-                resultado = (sb.append((char) read)).toString();
-            }
-            System.out.println(sb.toString());
-        }catch (FileNotFoundException e){
-            e.printStackTrace();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(in != null){
-                try{
-                    in.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-        return  resultado;
-    }
-
-    public void RecuperarValor(String valor, String title, String artist, String time, String name, byte[] albumfoto)
-    {
-        Toast.makeText(this, valor, Toast.LENGTH_SHORT).show();
-        String resultado = readJSON();
-        try {
-            JSONObject PRUEBA = new JSONObject(resultado);
-            JSONArray canciones = new JSONArray();
-            JSONObject object = new JSONObject();
-            JSONObject element = new JSONObject();
-            try{
-                object.put("nombre", valor);
-                object.put("numCanciones", 1);
-                object.put("canciones", canciones);
-                element.put("nombreCancion",title);
-                element.put("artista", artist);
-                element.put("duracion", time);
-                element.put("album", name);
-                element.put("foto", albumfoto);
-                canciones.put(element);
-
-            }catch (JSONException e){}
-
-            JSONArray old = PRUEBA.getJSONArray("lista");
-            old.put(object);
-
-            WriteFile(this, filename, PRUEBA.toString());
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-
-
-    public void WriteFile(Context context, String filename, String str)
-    {
-        FileOutputStream out = null;
-        try {
-            out = context.openFileOutput(filename, Context.MODE_PRIVATE);
-            out.write(str.getBytes(), 0, str.length());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(out != null){
-                try {
-                    out.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
 }
