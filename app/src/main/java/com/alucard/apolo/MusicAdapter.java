@@ -72,7 +72,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
             public void onClick(View v) {
                 reproduccion = false;
                 Intent intent = new Intent(mContext, MusicPlayActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("position", position);
                 mContext.startActivity(intent);
             }

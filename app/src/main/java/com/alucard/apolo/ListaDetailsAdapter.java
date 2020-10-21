@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
+import static com.alucard.apolo.BibliotecaActivity.reproduccion;
+
 public class ListaDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private Context context;
     private LayoutInflater inflater;
@@ -63,6 +65,7 @@ public class ListaDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         myHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                reproduccion = false;
                 Intent intent = new Intent(context, MusicPlayActivity.class);
                 intent.putExtra("position", position);
                 intent.putExtra("sender", "listDetails");

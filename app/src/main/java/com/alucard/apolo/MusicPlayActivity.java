@@ -1,6 +1,5 @@
 package com.alucard.apolo;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -33,12 +32,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.alucard.apolo.AlbumDetailsAdapter.albumFiles;
+import static com.alucard.apolo.BibliotecaActivity.pista;
+import static com.alucard.apolo.BibliotecaActivity.reproduccion;
 import static com.alucard.apolo.ListaDetailsAdapter.listFiles;
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.repeat;
-import static com.alucard.apolo.BibliotecaActivity.reproduccion;
 import static com.alucard.apolo.BibliotecaActivity.shuffle;
-import static com.alucard.apolo.BibliotecaActivity.pista;
 
 public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener{
 
@@ -78,7 +77,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
 
         //Ocultamos barra
         getSupportActionBar().hide();
-
+        
         initViews();
         getIntentMethod();
         getPreferences();
@@ -207,11 +206,6 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         prevThreadBtn();
         super.onResume();
     }
-
-    protected void onPause() {
-        super.onPause();
-    }
-
 
     private void prevThreadBtn() {
         prevThread = new Thread(){

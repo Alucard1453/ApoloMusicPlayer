@@ -25,6 +25,7 @@ import static com.alucard.apolo.AlbumDetailsAdapter.albumFiles;
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.pista;
 import static com.alucard.apolo.BibliotecaActivity.reproduccion;
+import static com.alucard.apolo.ListaDetailsAdapter.listFiles;
 import static com.alucard.apolo.MusicPlayActivity.sender;
 
 
@@ -53,7 +54,10 @@ public class BarraInferior extends Fragment implements View.OnClickListener {
         super.onResume();
         if (sender != null && sender.equals("albumDetails")){
             canciones = albumFiles;
-        }else{
+        }else if (sender != null && sender.equals("listDetails")){
+            canciones = listFiles;
+        }
+        else{
             canciones = musicFiles;
         }
         Log.e("Numpista",pista+"");
