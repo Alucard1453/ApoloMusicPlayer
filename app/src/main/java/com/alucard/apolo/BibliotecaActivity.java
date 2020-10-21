@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabItem;
@@ -47,7 +48,9 @@ public class BibliotecaActivity extends AppCompatActivity {
     static int tipoVista = 0;
     ArchivoJson archivoJson;
 
+    static boolean reproduccion = false;
     static boolean shuffle = false, repeat = false;
+    static int pista = -1;
 
     FileInputStream in = null;
     String filename = "lista.txt";
@@ -57,9 +60,14 @@ public class BibliotecaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
         permission();
+<<<<<<< HEAD
+        crearArchivo();
+        findViewById(R.id.barraReproduccion).setVisibility(View.INVISIBLE);
+=======
         archivoJson = new ArchivoJson(this, filename);
         archivoJson.crearArchivo(filename);
 
+>>>>>>> e02c8e58e975fe40d243fcd17adb773f2f172e40
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -105,9 +113,15 @@ public class BibliotecaActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (pista!=-1){
+            findViewById(R.id.barraReproduccion).setVisibility(View.VISIBLE);
+        }
     }
 
     private void permission() {

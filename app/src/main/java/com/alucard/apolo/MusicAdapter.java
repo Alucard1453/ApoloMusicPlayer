@@ -18,6 +18,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
+import static com.alucard.apolo.BibliotecaActivity.reproduccion;
+
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder> {
      Context mContext;
      ArrayList<MusicFiles> mFiles;
@@ -68,7 +70,9 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.MyViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                reproduccion = false;
                 Intent intent = new Intent(mContext, MusicPlayActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
                 intent.putExtra("position", position);
                 mContext.startActivity(intent);
             }
