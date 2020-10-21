@@ -1,5 +1,6 @@
 package com.alucard.apolo;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.palette.graphics.Palette;
@@ -14,6 +15,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -30,7 +32,9 @@ import java.util.Random;
 import static com.alucard.apolo.AlbumDetailsAdapter.albumFiles;
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.repeat;
+import static com.alucard.apolo.BibliotecaActivity.reproduccion;
 import static com.alucard.apolo.BibliotecaActivity.shuffle;
+import static com.alucard.apolo.BibliotecaActivity.pista;
 
 public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener{
 
@@ -38,6 +42,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     SeekBar seekBarTime;
     Button btn_back, btn_play_pause, btn_next, btn_add_playlist, btn_favorite, btn_loop, btn_suffle;
     ImageView cover;
+    static String sender = "";
     int position = -1;
     static ArrayList<MusicFiles> listSongs = new ArrayList<>();
     static Uri uri;
@@ -46,13 +51,26 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     private Thread playThread, prevThread, nextThread;
 
     @Override
+    protected void onPause() {
+        super.onPause();
+
+        pista = position;
+        reproduccion = true;
+        SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putInt("position",position);
+        edit.putString("sender",sender);
+        edit.apply();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
         //Ocultamos barra
         getSupportActionBar().hide();
-        
+
         initViews();
         getIntentMethod();
         getPreferences();
@@ -383,8 +401,17 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     }
 
     private void getIntentMethod() {
-        position = getIntent().getIntExtra("position",-1);
-        String sender = getIntent().getStringExtra("sender");
+        if (reproduccion){
+            SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
+            Log.e("Posicion", sp.getInt("position", -1)+"");
+            position = sp.getInt("position", 0);
+            Log.e("Sender", sp.getString("sender", "")+"");
+            sender = sp.getString("sender", "");
+        }else{
+            position = getIntent().getIntExtra("position",-1);
+            sender = getIntent().getStringExtra("sender");
+        }
+
         if (sender != null && sender.equals("albumDetails")){
             listSongs = albumFiles;
         }else{
@@ -396,10 +423,12 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             uri = Uri.parse(listSongs.get(position).getPath());
         }
         if (mediaPlayer != null){
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
-            mediaPlayer.start();
+            if (!reproduccion) {
+                mediaPlayer.stop();
+                mediaPlayer.release();
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
+                mediaPlayer.start();
+            }
         }else{
             mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
             mediaPlayer.start();

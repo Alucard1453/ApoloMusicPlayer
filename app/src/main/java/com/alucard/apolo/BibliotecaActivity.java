@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -16,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabItem;
@@ -44,7 +47,9 @@ public class BibliotecaActivity extends AppCompatActivity {
     static ArrayList<MusicFiles> musicFiles;
     static int tipoVista = 0;
 
+    static boolean reproduccion = false;
     static boolean shuffle = false, repeat = false;
+    static int pista = -1;
 
     FileInputStream in = null;
     String filename = "lista.txt";
@@ -55,7 +60,7 @@ public class BibliotecaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_biblioteca);
         permission();
         crearArchivo();
-
+        findViewById(R.id.barraReproduccion).setVisibility(View.INVISIBLE);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -99,9 +104,15 @@ public class BibliotecaActivity extends AppCompatActivity {
             public void onTabReselected(TabLayout.Tab tab) {
 
             }
-
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (pista!=-1){
+            findViewById(R.id.barraReproduccion).setVisibility(View.VISIBLE);
+        }
     }
 
     private void permission() {
