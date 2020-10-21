@@ -71,4 +71,12 @@
         android:text="TextView"
         android:textColor="@color/colorSecondary"
         android:textSize="1sp" />
+
+    <TextView
+        android:id="@+id/music_file_foto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textColor="@color/colorSecondary"
+        android:textSize="1sp" />
 </RelativeLayout>

@@ -19,6 +19,14 @@
             android:textColor="@color/colorSecondary"
             android:textSize="1sp" />
 
+        <TextView
+            android:id="@+id/music_file_foto_op"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:textColor="@color/colorSecondary"
+            android:textSize="1sp" />
+
         <ImageView
             android:id="@+id/music_img_op"
             android:layout_width="80dp"

@@ -46,6 +46,7 @@ public class BibliotecaActivity extends AppCompatActivity {
     public static int REQUEST_CODE = 1;
     static ArrayList<MusicFiles> musicFiles;
     static int tipoVista = 0;
+    ArchivoJson archivoJson;
 
     static boolean reproduccion = false;
     static boolean shuffle = false, repeat = false;
@@ -59,8 +60,14 @@ public class BibliotecaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biblioteca);
         permission();
+<<<<<<< HEAD
         crearArchivo();
         findViewById(R.id.barraReproduccion).setVisibility(View.INVISIBLE);
+=======
+        archivoJson = new ArchivoJson(this, filename);
+        archivoJson.crearArchivo(filename);
+
+>>>>>>> e02c8e58e975fe40d243fcd17adb773f2f172e40
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -71,12 +78,14 @@ public class BibliotecaActivity extends AppCompatActivity {
                         tabLayout.getTabAt(1).setIcon(R.drawable.listas);
                         tabLayout.getTabAt(2).setIcon(R.drawable.album);
                         tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        tipoVista = 0;
                         break;
                     case 1:
                         tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
                         tabLayout.getTabAt(1).setIcon(R.drawable.listasselect);
                         tabLayout.getTabAt(2).setIcon(R.drawable.album);
                         tabLayout.getTabAt(3).setIcon(R.drawable.artist);
+                        tipoVista = 1;
                         break;
                     case 2:
                         tabLayout.getTabAt(0).setIcon(R.drawable.canciones);
@@ -207,52 +216,4 @@ public class BibliotecaActivity extends AppCompatActivity {
         return viewPager;
     }
 
-    public void crearArchivo(){
-        try{
-            in = this.openFileInput(filename);
-        }catch (FileNotFoundException e)
-        {
-            crearJSON();
-        }
-    }
-
-    public void crearJSON(){
-
-        JSONObject object = new JSONObject();
-        JSONArray array = new JSONArray();
-        JSONObject principal = new JSONObject();
-        JSONArray canciones = new JSONArray();
-        try{
-            object.put("nombre", "Favoritos");
-            object.put("numCanciones", "0");
-            object.put("canciones", canciones);
-            array.put(object);
-            principal.put("lista",array);
-        }catch (JSONException e){}
-
-
-        WriteFile(this, filename,principal.toString());
-    }
-
-    public void WriteFile(Context context, String filename, String str)
-    {
-        FileOutputStream out = null;
-        try {
-            out = context.openFileOutput(filename, Context.MODE_APPEND);
-            out.write(str.getBytes(), 0, str.length());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        finally {
-            if(out != null){
-                try {
-                    out.close();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }

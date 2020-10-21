@@ -22,6 +22,7 @@
         </activity>
         <activity android:name=".MusicPlayActivity"/>
         <activity android:name=".Listas"/>
+        <activity android:name=".ListaDetails"/>
     </application>
 
 </manifest>
