@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.alucard.apolo.MusicPlayActivity.position;
+
 public class BibliotecaActivity extends AppCompatActivity {
 
     TabLayout tabLayout;
@@ -50,7 +52,8 @@ public class BibliotecaActivity extends AppCompatActivity {
 
     static boolean shuffle = false, repeat = false;
     static boolean reproduccion = false;
-    static int pista = -1;
+
+    public static BarraInferior barrita;
 
     FileInputStream in = null;
     String filename = "lista.txt";
@@ -112,12 +115,19 @@ public class BibliotecaActivity extends AppCompatActivity {
 
         });
 
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        barrita = new BarraInferior();
+        fragmentTransaction.add(R.id.barraReproduccion, barrita);
+        fragmentTransaction.commit();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (pista!=-1){
+        if (position!=-1){
             findViewById(R.id.barraReproduccion).setVisibility(View.VISIBLE);
         }
     }
@@ -184,7 +194,7 @@ public class BibliotecaActivity extends AppCompatActivity {
             MediaStore.Audio.Media.DURATION,
             MediaStore.Audio.Media.DATA, //Para el path (ruta)
             MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media._ID
+            MediaStore.Audio.Media._ID,
         };
         Cursor cursor = context.getContentResolver().query(uri,projection,
                 null, null, null);

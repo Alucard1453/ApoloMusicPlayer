@@ -31,9 +31,8 @@
         android:layout_height="match_parent">
     </androidx.viewpager.widget.ViewPager>
 
-    <fragment
+    <RelativeLayout
         android:id="@+id/barraReproduccion"
-        android:name="com.alucard.apolo.BarraInferior"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="600dp"/>
