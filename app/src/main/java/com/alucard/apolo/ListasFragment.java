@@ -29,6 +29,7 @@ public class ListasFragment extends Fragment {
     EditText nombre;
     FileInputStream in = null;
     ArchivoJson archivoJson;
+    static int vistaLista = 0;
 
 
     public ListasFragment() {
@@ -99,6 +100,38 @@ public class ListasFragment extends Fragment {
                 });
             }
         });
+        vistaLista = 1;
         return view;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        List<ListasDeReproduccion> data = new ArrayList<>();
+
+        archivoJson = new ArchivoJson(getActivity(), filename);
+
+        try {
+            String jsonString = archivoJson.readJSON();
+
+            JSONObject jsonObject = new JSONObject(jsonString);
+            JSONArray arreglo = jsonObject.getJSONArray("lista");
+
+            for (int i = 0; i < arreglo.length(); i++) {
+                JSONObject itemObj = arreglo.getJSONObject(i);
+                String name = itemObj.getString("nombre");
+                String canciones = itemObj.getString("numCanciones");
+                ListasDeReproduccion listasDeReproduccion = new ListasDeReproduccion(name, canciones);
+                data.add(listasDeReproduccion);
+            }
+
+            listAdapter = new ListAdapter(getContext(), data);
+            recyclerView.setAdapter(listAdapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        }catch (JSONException e) {
+            System.out.println(e);
+        }
+
     }
 }

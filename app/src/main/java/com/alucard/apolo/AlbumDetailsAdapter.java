@@ -28,6 +28,8 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
     String name, artist, title, time, prueba;
     private String filename = "lista.txt";
     ArchivoJson archivoJson;
+    Button favoritoD;
+    String favD;
 
     public AlbumDetailsAdapter(Context mContext, ArrayList<MusicFiles> albumFiles){
         this.mContext=mContext;
@@ -112,6 +114,7 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
             TextView music_file_artist_op = (TextView) myDialog.findViewById(R.id.music_file_artist_op);
             TextView music_file_album_op = (TextView)myDialog.findViewById(R.id.music_file_album_op);
             TextView music_file_foto_op = (TextView)myDialog.findViewById(R.id.music_file_foto_op);
+            TextView text = (TextView)myDialog.findViewById(R.id.add_fav_txt);
 
             music_file_name_op.setText(file_name.getText().toString());
             music_file_artist_op.setText(artist_name.getText().toString());
@@ -124,6 +127,18 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
             title = file_name.getText().toString();
             time = duration.getText().toString();
             prueba = album_foto.getText().toString();
+
+            archivoJson = new ArchivoJson(mContext, filename);
+            favD = archivoJson.BuscarFavorito(file_name.getText().toString());
+            favoritoD = (Button)myDialog.findViewById(R.id.fav);
+            if (favD.equals("True")){
+                favoritoD.setBackgroundResource(R.drawable.liked);
+                text.setText("Quitar de favoritos");
+            }
+            else {
+                favoritoD.setBackgroundResource(R.drawable.like);
+                text.setText("Agregar a favoritos");
+            }
 
             myDialog.show();
 
@@ -169,19 +184,22 @@ public class AlbumDetailsAdapter extends RecyclerView.Adapter<AlbumDetailsAdapte
                 }
             });
 
-            Button favorito = (Button)myDialog.findViewById(R.id.fav);
-            favorito.setOnClickListener(new View.OnClickListener() {
+            favoritoD.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     myDialog.hide();
-                    archivoJson = new ArchivoJson(mContext, filename);
-                    archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
-                    FragmentManager fm = ((BibliotecaActivity)mContext).getSupportFragmentManager();
-                    FragmentTransaction ft = fm.beginTransaction();
-                    CancionesFragment cf = new CancionesFragment();
-                    ft.replace(R.id.frameCanciones, cf);
-                    ft.commit();
-
+                    if(favD.equals("False")){
+                        archivoJson = new ArchivoJson(mContext, filename);
+                        archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+                    }else if(favD.equals("True")) {
+                        archivoJson = new ArchivoJson(mContext, filename);
+                        archivoJson.QuitarDeFavoritos(title);
+                        Intent intent = new Intent(mContext, BibliotecaActivity.class);
+                        mContext.startActivity(intent);
+                    }else {
+                        archivoJson = new ArchivoJson(mContext, filename);
+                        archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+                    }
                 }
             });
         }

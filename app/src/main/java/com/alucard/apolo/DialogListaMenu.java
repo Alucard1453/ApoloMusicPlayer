@@ -5,14 +5,12 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class DialogCancionesMenu extends DialogFragment {
-
+public class DialogListaMenu extends DialogFragment {
 
     @NonNull
     @Override
@@ -20,8 +18,7 @@ public class DialogCancionesMenu extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
 
-        View MyView = inflater.inflate(R.layout.dialog_cancionesmenu, null);
+        View myView = inflater.inflate(R.layout.dialog_listasmenu, null);
         return builder.create();
-
     }
 }

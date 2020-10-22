@@ -38,6 +38,45 @@
             android:background="#2B2B2B"
             android:src="@drawable/no_cover"  />
 
+        <ImageView
+            android:id="@+id/listaPhotopt1"
+            android:layout_width="135dp"
+            android:layout_height="135dp"
+            android:layout_centerInParent="false"
+            android:layout_marginLeft="70dp"
+            android:layout_marginTop="30dp"
+            android:background="#2B2B2B"
+            android:src="@drawable/no_cover" />
+
+        <ImageView
+            android:id="@+id/listaPhotopt2"
+            android:layout_width="135dp"
+            android:layout_height="135dp"
+            android:layout_marginTop="30dp"
+            android:layout_toRightOf="@id/listaPhotopt1"
+            android:background="#2B2B2B"
+            android:src="@drawable/no_cover" />
+
+        <ImageView
+            android:id="@+id/listaPhotopt3"
+            android:layout_width="135dp"
+            android:layout_height="135dp"
+            android:layout_below="@id/listaPhotopt1"
+            android:layout_marginLeft="70dp"
+            android:background="#2B2B2B"
+            android:scaleType="centerCrop"
+            android:src="@drawable/no_cover" />
+
+        <ImageView
+            android:id="@+id/listaPhotopt4"
+            android:layout_width="135dp"
+            android:layout_height="135dp"
+            android:layout_below="@id/listaPhotopt2"
+            android:layout_toRightOf="@id/listaPhotopt3"
+            android:background="#2B2B2B"
+            android:scaleType="centerCrop"
+            android:src="@drawable/no_cover" />
+
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView

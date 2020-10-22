@@ -53,9 +53,11 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     private Handler handler = new Handler();
     private Thread playThread, prevThread, nextThread;
     String name, artist, title, time, prueba;
+    String fav = "null";
     private String filename = "lista.txt";
     ArchivoJson archivoJson;
     static int Vista = 0;
+    int aux;
 
     @Override
     protected void onPause() {
@@ -90,6 +92,15 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         title = listSongs.get(position).getTitle();
         time = listSongs.get(position).getDuration();
         prueba = listSongs.get(position).getPath();
+
+        archivoJson = new ArchivoJson(this, filename);
+        fav = archivoJson.BuscarFavorito(titleSong.getText().toString());
+        if (fav.equals("True")){
+            btn_favorite.setBackgroundResource(R.drawable.liked);
+        }
+        else {
+            btn_favorite.setBackgroundResource(R.drawable.like);
+        }
 
         mediaPlayer.setOnCompletionListener(this);
 
@@ -177,8 +188,22 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         btn_favorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                archivoJson = new ArchivoJson(MusicPlayActivity.this, filename);
-                archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+                if(fav.equals("False")){
+                    btn_favorite.setBackgroundResource(R.drawable.liked);
+                    archivoJson = new ArchivoJson(MusicPlayActivity.this, filename);
+                    archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+                    fav = "True";
+                }else if(fav.equals("True")) {
+                    btn_favorite.setBackgroundResource(R.drawable.like);
+                    archivoJson = new ArchivoJson(MusicPlayActivity.this, filename);
+                    archivoJson.QuitarDeFavoritos(title);
+                    fav = "False";
+                }else {
+                    btn_favorite.setBackgroundResource(R.drawable.liked);
+                    archivoJson = new ArchivoJson(MusicPlayActivity.this, filename);
+                    archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
+                    fav = "True";
+                }
             }
         });
     }
@@ -240,6 +265,14 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             metaData(uri.toString());
             titleSong.setText(listSongs.get(position).getTitle());
             nameArtist.setText(listSongs.get(position).getArtist());
+            archivoJson = new ArchivoJson(this, filename);
+            fav = archivoJson.BuscarFavorito(titleSong.getText().toString());
+            if (fav.equals("True")){
+                btn_favorite.setBackgroundResource(R.drawable.liked);
+            }
+            else {
+                btn_favorite.setBackgroundResource(R.drawable.like);
+            }
 
             seekBarTime.setMax(mediaPlayer.getDuration());
             MusicPlayActivity.this.runOnUiThread(new Runnable() {
@@ -274,6 +307,14 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             metaData(uri.toString());
             titleSong.setText(listSongs.get(position).getTitle());
             nameArtist.setText(listSongs.get(position).getArtist());
+            archivoJson = new ArchivoJson(this, filename);
+            fav = archivoJson.BuscarFavorito(titleSong.getText().toString());
+            if (fav.equals("True")){
+                btn_favorite.setBackgroundResource(R.drawable.liked);
+            }
+            else {
+                btn_favorite.setBackgroundResource(R.drawable.like);
+            }
 
             seekBarTime.setMax(mediaPlayer.getDuration());
             MusicPlayActivity.this.runOnUiThread(new Runnable() {
@@ -327,6 +368,14 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             metaData(uri.toString());
             titleSong.setText(listSongs.get(position).getTitle());
             nameArtist.setText(listSongs.get(position).getArtist());
+            archivoJson = new ArchivoJson(this, filename);
+            fav = archivoJson.BuscarFavorito(titleSong.getText().toString());
+            if (fav.equals("True")){
+                btn_favorite.setBackgroundResource(R.drawable.liked);
+            }
+            else {
+                btn_favorite.setBackgroundResource(R.drawable.like);
+            }
 
             seekBarTime.setMax(mediaPlayer.getDuration());
             MusicPlayActivity.this.runOnUiThread(new Runnable() {
@@ -361,6 +410,14 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             metaData(uri.toString());
             titleSong.setText(listSongs.get(position).getTitle());
             nameArtist.setText(listSongs.get(position).getArtist());
+            archivoJson = new ArchivoJson(this, filename);
+            fav = archivoJson.BuscarFavorito(titleSong.getText().toString());
+            if (fav.equals("True")){
+                btn_favorite.setBackgroundResource(R.drawable.liked);
+            }
+            else {
+                btn_favorite.setBackgroundResource(R.drawable.like);
+            }
 
             seekBarTime.setMax(mediaPlayer.getDuration());
             MusicPlayActivity.this.runOnUiThread(new Runnable() {

@@ -25,7 +25,7 @@ public class Listas extends AppCompatActivity {
     Button nueva;
     String title, artist, time, name, prueba;
     ArchivoJson archivoJson;
-    private String TAG;
+    static int vistaCrear = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
@@ -88,13 +88,17 @@ public class Listas extends AppCompatActivity {
                         archivoJson.crearListaCancion(nombre.getText().toString(), title, artist, time, name, prueba);
                         listas.hide();
                         finish();
-                        Intent intent = new Intent(Listas.this, BibliotecaActivity.class);
-                        overridePendingTransition( 0, 0);
-                        Listas.this.startActivity(intent);
-                        overridePendingTransition( 0, 0);
                     }
                 });
             }
         });
+        vistaCrear = 2;
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        vistaCrear = 0;
+        finish();
     }
 }

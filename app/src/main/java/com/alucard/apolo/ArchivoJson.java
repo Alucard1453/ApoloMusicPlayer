@@ -94,7 +94,6 @@ public class ArchivoJson
             while ((read = buf.read()) != -1){
                 resultado = (sb.append((char) read)).toString();
             }
-            System.out.println(sb.toString());
         }catch (FileNotFoundException e){
             e.printStackTrace();
         }catch (IOException e){
@@ -201,4 +200,151 @@ public class ArchivoJson
             e.printStackTrace();
         }
     }
+
+    public void ModificarNombre(int posicion, String nuevoNombre){
+        String resultado = readJSON();
+        try{
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONObject cambio = jsonObject.getJSONArray("lista").getJSONObject(posicion);
+            cambio.has("nombre");
+            cambio.putOpt("nombre", nuevoNombre);
+
+            WriteFile(context, filename, jsonObject.toString());
+            Toast.makeText(context, "Cambio exitoso", Toast.LENGTH_SHORT).show();
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void EliminarLista(int position){
+        String resultado = readJSON();
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONArray elimina = jsonObject.getJSONArray("lista");
+            elimina.remove(position);
+
+            WriteFile(context, filename, jsonObject.toString());
+            Toast.makeText(context, "Lista eliminada", Toast.LENGTH_SHORT).show();
+
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void QuitarDeFavoritos(String nombre) {
+        String resultado = readJSON();
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONArray busqueda = jsonObject.getJSONArray("lista").getJSONObject(0).getJSONArray("canciones");
+            if(busqueda.length()>0)
+            {
+                for (int i = 0; i < busqueda.length(); i++) {
+                    JSONObject elemento = busqueda.getJSONObject(i);
+                    String valor = elemento.getString("nombreCancion");
+                    if (valor.equals(nombre)) {
+                        busqueda.remove(i);
+                        break;
+                    }
+                }
+
+                JSONObject obj = jsonObject.getJSONArray("lista").getJSONObject(0);
+                obj.has("numCanciones");
+                String num;
+                int nuevonum;
+                num = obj.get("numCanciones").toString();
+                nuevonum = Integer.parseInt(num);
+                nuevonum = nuevonum-1;
+                obj.putOpt("numCanciones", nuevonum);
+                WriteFile(context, filename, jsonObject.toString());
+                Toast.makeText(context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show();
+            }
+        }catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public String BuscarFavorito(String nombre){
+        String resultado = readJSON();
+        String esperado = "";
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONArray busqueda = jsonObject.getJSONArray("lista").getJSONObject(0).getJSONArray("canciones");
+            for(int i=0; i<busqueda.length(); i++) {
+                JSONObject elemento = busqueda.getJSONObject(i);
+                String valor = elemento.getString("nombreCancion");
+                if(valor.equals(nombre)){
+                    esperado = "True";
+                    break;
+                }
+                else {
+                    esperado = "False";
+                }
+            }
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return esperado;
+    }
+
+    public String obtenerUna(int lista){
+        String resultado = readJSON();
+        String path = " ";
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONObject busqueda = jsonObject.getJSONArray("lista").getJSONObject(lista).getJSONArray("canciones").getJSONObject(0);
+            busqueda.has("foto");
+            path = busqueda.get("foto").toString();
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        return path;
+    }
+
+    public String obtenerDos(int lista){
+        String resultado = readJSON();
+        String path = " ";
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONObject busqueda = jsonObject.getJSONArray("lista").getJSONObject(lista).getJSONArray("canciones").getJSONObject(1);
+            busqueda.has("foto");
+            path = busqueda.get("foto").toString();
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        return path;
+    }
+
+    public String obtenerTres(int lista){
+        String resultado = readJSON();
+        String path = " ";
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONObject busqueda = jsonObject.getJSONArray("lista").getJSONObject(lista).getJSONArray("canciones").getJSONObject(2);
+            busqueda.has("foto");
+            path = busqueda.get("foto").toString();
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        return path;
+    }
+
+    public String obtenerCuatro(int lista){
+        String resultado = readJSON();
+        String path = " ";
+        try {
+            JSONObject jsonObject = new JSONObject(resultado);
+            JSONObject busqueda = jsonObject.getJSONArray("lista").getJSONObject(lista).getJSONArray("canciones").getJSONObject(3);
+            busqueda.has("foto");
+            path = busqueda.get("foto").toString();
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+        return path;
+    }
+
 }
