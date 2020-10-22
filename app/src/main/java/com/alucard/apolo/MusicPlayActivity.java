@@ -2,12 +2,16 @@ package com.alucard.apolo;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.core.app.NotificationCompat;
 import androidx.palette.graphics.Palette;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +21,8 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,21 +38,25 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.alucard.apolo.AlbumDetailsAdapter.albumFiles;
-import static com.alucard.apolo.BibliotecaActivity.pista;
+import static com.alucard.apolo.AplicationClass.ACTION_NEXT;
+import static com.alucard.apolo.AplicationClass.ACTION_PLAY;
+import static com.alucard.apolo.AplicationClass.ACTION_PREV;
+import static com.alucard.apolo.AplicationClass.CHANNEL_ID_2;
+import static com.alucard.apolo.BibliotecaActivity.barrita;
 import static com.alucard.apolo.BibliotecaActivity.reproduccion;
 import static com.alucard.apolo.ListaDetailsAdapter.listFiles;
 import static com.alucard.apolo.BibliotecaActivity.musicFiles;
 import static com.alucard.apolo.BibliotecaActivity.repeat;
 import static com.alucard.apolo.BibliotecaActivity.shuffle;
 
-public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener{
+public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener, ActionPlaying, ServiceConnection {
 
     TextView tvTime, tvDuration, nameArtist, titleSong;
     SeekBar seekBarTime;
     Button btn_back, btn_play_pause, btn_next, btn_add_playlist, btn_favorite, btn_loop, btn_suffle;
-    ImageView cover;
+    ImageView cover, btn_back_2;
     static String sender = "";
-    int position = -1;
+    static int position = -1;
     static ArrayList<MusicFiles> listSongs = new ArrayList<>();
     static Uri uri;
     static MediaPlayer mediaPlayer;
@@ -57,17 +67,16 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     ArchivoJson archivoJson;
     static int Vista = 0;
 
+    //BarraNotificacion
+    MusicService musicService;
+    MediaSessionCompat mediaSession;
+
     @Override
     protected void onPause() {
         super.onPause();
 
-        pista = position;
-        reproduccion = true;
-        SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor edit = sp.edit();
-        edit.putInt("position",position);
-        edit.putString("sender",sender);
-        edit.apply();
+        //Bind para notificacion
+        unbindService(this);
     }
 
     @Override
@@ -77,7 +86,9 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
 
         //Ocultamos barra
         getSupportActionBar().hide();
-        
+
+        mediaSession = new MediaSessionCompat(this, "PlayerAudio");
+
         initViews();
         getIntentMethod();
         getPreferences();
@@ -181,6 +192,24 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
                 archivoJson.AgregarCancion(0, title, artist, time, name, prueba);
             }
         });
+
+        btn_back_2.setOnClickListener(
+            new View.OnClickListener() {
+                public void onClick(View v) {
+                    finish();
+                }
+            }
+        );
+    }
+
+    public void actualizaBarrita(){
+        reproduccion = true;
+        SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sp.edit();
+        edit.putInt("position",position);
+        edit.putString("sender",sender);
+        edit.apply();
+        barrita.actualizaBarra();
     }
 
     private void getPreferences() {
@@ -201,6 +230,8 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
 
     @Override
     protected void onResume() {
+        Intent intent = new Intent(this,MusicService.class);
+        bindService(intent,this, BIND_AUTO_CREATE);
         playThreadBtn();
         nextThreadBtn();
         prevThreadBtn();
@@ -223,7 +254,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         prevThread.start();
     }
 
-    private void btn_back_clicked() {
+    public void btn_back_clicked() {
         if (mediaPlayer.isPlaying()){
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -258,6 +289,8 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             String duration = milisecondsToString(mediaPlayer.getDuration());
             tvDuration.setText(duration);
             mediaPlayer.start();
+            showNotification(R.drawable.pause_nt);
+            actualizaBarrita();
         }else{
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -291,6 +324,8 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             String duration = milisecondsToString(mediaPlayer.getDuration());
             tvDuration.setText(duration);
             btn_play_pause.setBackgroundResource(R.drawable.play);
+            showNotification(R.drawable.play_arrow_nt);
+            actualizaBarrita();
         }
     }
 
@@ -310,7 +345,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         nextThread.start();
     }
 
-    private void btn_next_clicked() {
+    public void btn_next_clicked() {
         if (mediaPlayer.isPlaying()){
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -345,6 +380,8 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             String duration = milisecondsToString(mediaPlayer.getDuration());
             tvDuration.setText(duration);
             mediaPlayer.start();
+            showNotification(R.drawable.pause_nt);
+            actualizaBarrita();
         }else{
             mediaPlayer.stop();
             mediaPlayer.release();
@@ -378,6 +415,8 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             String duration = milisecondsToString(mediaPlayer.getDuration());
             tvDuration.setText(duration);
             btn_play_pause.setBackgroundResource(R.drawable.play);
+            showNotification(R.drawable.play_arrow_nt);
+            actualizaBarrita();
         }
     }
 
@@ -402,9 +441,10 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         playThread.start();
     }
 
-    private void btn_play_pause_Clicked() {
+    public void btn_play_pause_Clicked() {
         if (mediaPlayer.isPlaying()){
-            btn_play_pause.setBackgroundResource(R.drawable.play);
+            btn_play_pause.setBackgroundResource(R.drawable.play_arrow_nt);
+            showNotification(R.drawable.play_arrow_nt);
             mediaPlayer.pause();
             seekBarTime.setMax(mediaPlayer.getDuration());
             MusicPlayActivity.this.runOnUiThread(new Runnable() {
@@ -419,6 +459,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             });
         }else{
             btn_play_pause.setBackgroundResource(R.drawable.pause);
+            showNotification(R.drawable.pause_nt);
             mediaPlayer.start();
             seekBarTime.setMax(mediaPlayer.getDuration());
             MusicPlayActivity.this.runOnUiThread(new Runnable() {
@@ -437,8 +478,6 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
     private void getIntentMethod() {
         if (reproduccion){
             SharedPreferences sp = getPreferences(Context.MODE_PRIVATE);
-            Log.e("Posicion", sp.getInt("position", -1)+"");
-            position = sp.getInt("position", 0);
             Log.e("Sender", sp.getString("sender", "")+"");
             sender = sp.getString("sender", "");
         }else{
@@ -465,10 +504,14 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
                 mediaPlayer.release();
                 mediaPlayer = MediaPlayer.create(getApplicationContext(), uri);
                 mediaPlayer.start();
+                showNotification(R.drawable.pause_nt);
+                actualizaBarrita();
             }
         }else{
             mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
             mediaPlayer.start();
+            showNotification(R.drawable.pause_nt);
+            actualizaBarrita();
         }
         seekBarTime.setMax(mediaPlayer.getDuration());
         //Indicamos cuanto dura la cancion
@@ -495,6 +538,8 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         btn_suffle = findViewById(R.id.btn_suffle);
 
         cover = findViewById(R.id.coverArt);
+
+        btn_back_2 = findViewById(R.id.btn_back_2);
     }
 
     private String milisecondsToString(int time){
@@ -516,7 +561,7 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
         byte[] art = retriever.getEmbeddedPicture();
         Bitmap bitmap;
         if (art != null){
-            Glide.with(this).asBitmap().load(art).into(cover);
+            Glide.with(getApplicationContext()).asBitmap().load(art).into(cover);
             //Cambia el fondo de acorde al color de la portada
             bitmap = BitmapFactory.decodeByteArray(art,0,art.length);
             Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
@@ -537,9 +582,9 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
                 }
             });
         }else{
-            Glide.with(this).asBitmap().load(R.drawable.no_cover).into(cover);
+            Glide.with(getApplicationContext()).asBitmap().load(R.drawable.no_cover).into(cover);
             RelativeLayout gradient = findViewById(R.id.mContainer);
-            gradient.setBackgroundResource(R.drawable.background_normal);
+            gradient.setBackgroundResource(R.color.colorSecondary);
         }
         retriever.release();
     }
@@ -553,5 +598,68 @@ public class MusicPlayActivity extends AppCompatActivity implements MediaPlayer.
             btn_play_pause.setBackgroundResource(R.drawable.pause);
             mediaPlayer.setOnCompletionListener(this);
         }
+    }
+
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        MusicService.MyBinder myBinder = (MusicService.MyBinder)service;
+        musicService = myBinder.getService();
+        musicService.setCallBack(MusicPlayActivity.this);
+        //Toast.makeText(this, "Conectado "+musicService,Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+        musicService = null;
+        //Toast.makeText(this, "Desconectado "+musicService,Toast.LENGTH_SHORT).show();
+    }
+
+    public void showNotification(int playPauseBtn){
+        Intent intent = new Intent(this, MusicPlayActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent,0);
+
+        Intent prevIntent = new Intent(this, NotificationReceiver.class).setAction(ACTION_PREV);
+        PendingIntent prevPendingIntent = PendingIntent.getBroadcast(this, 0, prevIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent playIntent = new Intent(this, NotificationReceiver.class).setAction(ACTION_PLAY);
+        PendingIntent playPendingIntent = PendingIntent.getBroadcast(this, 0, playIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent nextIntent = new Intent(this, NotificationReceiver.class).setAction(ACTION_NEXT);
+        PendingIntent nextPendingIntent = PendingIntent.getBroadcast(this, 0, nextIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Bitmap picture;
+        byte[] image = getAlbumArt(listSongs.get(position).getPath());
+        if(image != null){
+            picture = BitmapFactory.decodeByteArray(image,0,image.length);
+        }else{
+            picture = BitmapFactory.decodeResource(getResources(), R.drawable.no_cover);
+        }
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID_2)
+                .setSmallIcon(R.drawable.no_cover)
+                .setLargeIcon(picture)
+                .setContentTitle(listSongs.get(position).getTitle())
+                .setContentText(listSongs.get(position).getArtist())
+                .addAction(R.drawable.previous_nt, "Anterior", prevPendingIntent)
+                .addAction(playPauseBtn, "Play", playPendingIntent)
+                .addAction(R.drawable.next_nt, "Siguiente", nextPendingIntent)
+                .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
+                    .setMediaSession(mediaSession.getSessionToken()))
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setContentIntent(contentIntent)
+                .setOnlyAlertOnce(true)
+                .setShowWhen(false)
+                .build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0,notification);
+    }
+
+    private byte[] getAlbumArt(String uri){
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(uri);
+        byte[] art = retriever.getEmbeddedPicture();
+        retriever.release();
+        return art;
     }
 }
